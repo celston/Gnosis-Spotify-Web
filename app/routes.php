@@ -18,16 +18,19 @@ Route::get('/', function()
         $accessToken = $accessToken[0];
         Session::put('SPOTIFY_ACCESS_TOKEN', $accessToken);
     }
+    $validToken = false;
+    $session = new \SpotifyWebAPI\Session('f33dad46558f45e184b2a8fc0d4ad519', 'eacb03c7675b49a68d43cd30d4c4cabb', 'http://spotifyfindgnosis/auth');
     if (!$accessToken) {
-        $session = new \SpotifyWebAPI\Session('f33dad46558f45e184b2a8fc0d4ad519', 'eacb03c7675b49a68d43cd30d4c4cabb', 'http://spotifyfindgnosis/auth');
         return Redirect::to($session->getAuthorizeUrl(array('scope' => array('playlist-read-private', 'playlist-modify-public', 'playlist-modify-private', 'streaming', 'user-library-read', 'user-library-modify', 'user-read-private', 'user-read-email'))));
     }
 
     $api = new \SpotifyWebAPI\SpotifyWebAPI();
-    $api->setAccessToken($accessToken);
-    $me = $api->me();
-    $playlists = $api->getUserPlaylists($me->id);
-    return Response::json(array('me' => $me, 'playlists' => $playlists));
+
+    $refresh = $session->getRefreshToken();
+
+    $test = $api->setAccessToken($accessToken);
+
+    return Response::json(array('test' => $test, 'api' => $api, 'refresh' => $refresh));
 });
 
 Route::get('/auth', function () {

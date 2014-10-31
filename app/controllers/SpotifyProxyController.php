@@ -26,11 +26,15 @@ class SpotifyProxyController extends BaseController {
         return Response::json($api->getUserPlaylists($me->id));
     }
 
-    public function getMystarredplaylist() {
+    public function getMystarredplaylist($offset = 0) {
         $api = $this->getApi();
         $me = $api->me();
 
-        return Response::json($api->getUserStarredPlaylist($me->id));
+        $options = array(
+            'offset' => $offset
+        );
+
+        return Response::json($api->getUserStarredPlaylistTracks($me->id, $options));
     }
 
     public function getSearch($type, $query) {
